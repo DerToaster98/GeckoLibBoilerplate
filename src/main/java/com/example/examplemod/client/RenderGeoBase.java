@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.model.ModelRenderer.ModelBox;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
@@ -165,9 +164,8 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								
 								//armorModel.setRotationAngles(targetSizeY, targetSizeZ, currentEntityBeingRendered.tickCount, currentEntityBeingRendered.yHeadRot, currentEntityBeingRendered.xRot, 0, currentEntityBeingRendered);
 								//sourceLimb.render(0);
-								IVertexBuilder ivertexbuilder = ItemRenderer.getArmorFoilBuffer(rtb, RenderType.armorCutoutNoCull(armorResource), false, armorForBone.hasFoil());
-								sourceLimb.render(stack, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
-								
+								IVertexBuilder ivb = ItemRenderer.getArmorFoilBuffer(rtb, RenderType.armorCutoutNoCull(armorResource), false,  armorForBone.hasFoil());
+								sourceLimb.render(stack, ivb, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 								
 								stack.popPose();
 								

@@ -4,7 +4,10 @@ import com.example.examplemod.entity.GeoTestEntity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -52,6 +55,62 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 	@Override
 	protected void postRenderItem(ItemStack item, String boneName, GeoTestEntity currentEntity) {
 		
+	}
+	
+	@Override
+	protected ItemStack getArmorForBone(String boneName, GeoTestEntity currentEntity) {
+		switch(boneName) {
+		case "armorBipedLeftLeg":
+		case "armorBipedRightLeg":
+			return leggings;
+		case "armorBipedBody":
+		case "armorBipedRightArm":
+		case "armorBipedLeftArm":
+			return chestplate;
+		case "armorBipedHead":
+			return helmet;
+		default:
+			return null;
+		}
+	}
+	
+	@Override
+	protected EquipmentSlotType getEquipmentSlotForArmorBone(String boneName, GeoTestEntity currentEntity) {
+		switch(boneName) {
+		case "armorBipedLeftLeg":
+		case "armorBipedRightLeg":
+			return EquipmentSlotType.LEGS;
+		case "armorBipedRightArm":
+			return !currentEntity.isLeftHanded() ?EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND;
+		case "armorBipedLeftArm":
+			return currentEntity.isLeftHanded() ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND;
+		case "armorBipedBody":
+			return EquipmentSlotType.CHEST;
+		case "armorBipedHead":
+			return EquipmentSlotType.HEAD;
+		default:
+			return null;
+		}
+	}
+	
+	@Override
+	protected ModelRenderer getArmorPartForBone(String name, BipedModel armorModel) {
+		switch(name) {
+		case "armorBipedLeftLeg":
+			return armorModel.leftLeg;
+		case "armorBipedRightLeg":
+			return armorModel.rightLeg;
+		case "armorBipedRightArm":
+			return armorModel.rightArm;
+		case "armorBipedLeftArm":
+			return armorModel.leftArm;
+		case "armorBipedBody":
+			return armorModel.body;
+		case "armorBipedHead":
+			return armorModel.head;
+		default:
+			return null;
+		}
 	}
 	
 	
