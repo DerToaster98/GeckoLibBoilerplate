@@ -60,6 +60,9 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 	@Override
 	protected ItemStack getArmorForBone(String boneName, GeoTestEntity currentEntity) {
 		switch(boneName) {
+		case "armorBipedLeftFoot":
+		case "armorBipedRightFoot":
+			return boots;
 		case "armorBipedLeftLeg":
 		case "armorBipedRightLeg":
 			return leggings;
@@ -77,6 +80,9 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 	@Override
 	protected EquipmentSlotType getEquipmentSlotForArmorBone(String boneName, GeoTestEntity currentEntity) {
 		switch(boneName) {
+		case "armorBipedLeftFoot":
+		case "armorBipedRightFoot":
+			return EquipmentSlotType.FEET;
 		case "armorBipedLeftLeg":
 		case "armorBipedRightLeg":
 			return EquipmentSlotType.LEGS;
@@ -96,8 +102,10 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 	@Override
 	protected ModelRenderer getArmorPartForBone(String name, BipedModel armorModel) {
 		switch(name) {
+		case "armorBipedLeftFoot":
 		case "armorBipedLeftLeg":
 			return armorModel.leftLeg;
+		case "armorBipedRightFoot":
 		case "armorBipedRightLeg":
 			return armorModel.rightLeg;
 		case "armorBipedRightArm":

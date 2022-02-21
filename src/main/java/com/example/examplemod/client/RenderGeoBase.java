@@ -136,6 +136,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					if (armorModel != null) {
 						ModelRenderer sourceLimb = this.getArmorPartForBone(bone.getName(), armorModel);
 						if (sourceLimb != null && !sourceLimb.cubes.isEmpty()) {
+							//IMPORTANT: The first cube is used to define the armor part!!
 							bone.childCubes.stream().findFirst().ifPresent((firstCube) -> {
 								final float targetSizeX = firstCube.size.x();
 								final float targetSizeY = firstCube.size.y();
