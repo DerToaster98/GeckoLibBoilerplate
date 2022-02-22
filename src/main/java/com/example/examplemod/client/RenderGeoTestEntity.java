@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
-	
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("examplemod", "textures/entity/testentity.png");
 	private static final ResourceLocation MODEL_RESLOC = new ResourceLocation("examplemod", "geo/testentity.geo.json");
 
@@ -22,7 +22,7 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 
 	@Override
 	protected ItemStack getHeldItemForBone(String boneName, GeoTestEntity currentEntity) {
-		switch(boneName) {
+		switch (boneName) {
 		case DefaultBipedBoneIdents.LEFT_HAND_BONE_IDENT:
 			return currentEntity.isLeftHanded() ? mainHand : offHand;
 		case DefaultBipedBoneIdents.RIGHT_HAND_BONE_IDENT:
@@ -35,7 +35,7 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 
 	@Override
 	protected TransformType getCameraTransformForItemAtBone(ItemStack boneItem, String boneName) {
-		switch(boneName) {
+		switch (boneName) {
 		case DefaultBipedBoneIdents.LEFT_HAND_BONE_IDENT:
 			return TransformType.THIRD_PERSON_LEFT_HAND;
 		case DefaultBipedBoneIdents.RIGHT_HAND_BONE_IDENT:
@@ -45,21 +45,19 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 		}
 	}
 
-	
-
 	@Override
 	protected void preRenderItem(ItemStack item, String boneName, GeoTestEntity currentEntity) {
-		
+
 	}
 
 	@Override
 	protected void postRenderItem(ItemStack item, String boneName, GeoTestEntity currentEntity) {
-		
+
 	}
-	
+
 	@Override
 	protected ItemStack getArmorForBone(String boneName, GeoTestEntity currentEntity) {
-		switch(boneName) {
+		switch (boneName) {
 		case "armorBipedLeftFoot":
 		case "armorBipedRightFoot":
 			return boots;
@@ -76,10 +74,10 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 			return null;
 		}
 	}
-	
+
 	@Override
 	protected EquipmentSlotType getEquipmentSlotForArmorBone(String boneName, GeoTestEntity currentEntity) {
-		switch(boneName) {
+		switch (boneName) {
 		case "armorBipedLeftFoot":
 		case "armorBipedRightFoot":
 			return EquipmentSlotType.FEET;
@@ -87,7 +85,7 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 		case "armorBipedRightLeg":
 			return EquipmentSlotType.LEGS;
 		case "armorBipedRightArm":
-			return !currentEntity.isLeftHanded() ?EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND;
+			return !currentEntity.isLeftHanded() ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND;
 		case "armorBipedLeftArm":
 			return currentEntity.isLeftHanded() ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND;
 		case "armorBipedBody":
@@ -98,10 +96,10 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 			return null;
 		}
 	}
-	
+
 	@Override
 	protected ModelRenderer getArmorPartForBone(String name, BipedModel armorModel) {
-		switch(name) {
+		switch (name) {
 		case "armorBipedLeftFoot":
 		case "armorBipedLeftLeg":
 			return armorModel.leftLeg;
@@ -120,30 +118,15 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 			return null;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	@Override
 	protected BlockState getHeldBlockForBone(String boneName, GeoTestEntity currentEntity) {
 		return null;
 	}
-	
+
 	@Override
 	protected void preRenderBlock(BlockState block, String boneName, GeoTestEntity currentEntity) {
-		
+
 	}
 
 	@Override

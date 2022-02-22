@@ -19,7 +19,6 @@ public abstract class ModelGeoBase<T extends LivingEntity & IAnimatable & IAnima
 		this.ENTITY_REGISTRY_PATH_NAME = entityName;
 	}
 
-	
 	@Override
 	public ResourceLocation getTextureLocation(T entity) {
 		return this.TEXTURE_DEFAULT;

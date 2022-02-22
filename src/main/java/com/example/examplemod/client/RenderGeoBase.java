@@ -44,7 +44,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	protected RenderGeoBase(EntityRendererManager renderManager, AnimatedGeoModel<T> modelProvider) {
 		this(renderManager, modelProvider, 1F, 1F, 0);
 	}
-	
+
 	@SuppressWarnings("resource")
 	protected void bindTexture(ResourceLocation textureLocation) {
 		Minecraft.getInstance().textureManager.bind(textureLocation);
@@ -62,8 +62,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	}
 
 	/*
-	 * 0 => Normal model
-	 * 1 => Magical armor overlay
+	 * 0 => Normal model 1 => Magical armor overlay
 	 */
 	private int currentModelRenderCycle = 0;
 
@@ -73,11 +72,11 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		this.currentModelRenderCycle = 0;
 		super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
 	}
-	
+
 	// Rendercall to render the model itself
 	@Override
-	public void render(GeoModel model, T animatable, float partialTicks, RenderType type, MatrixStack matrixStackIn, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn,
-			float red, float green, float blue, float alpha) {
+	public void render(GeoModel model, T animatable, float partialTicks, RenderType type, MatrixStack matrixStackIn, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green,
+			float blue, float alpha) {
 		super.render(model, animatable, partialTicks, type, matrixStackIn, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		this.currentModelRenderCycle++;
 	}
@@ -91,8 +90,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	}
 
 	@Override
-	public void renderEarly(T animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue,
-			float partialTicks) {
+	public void renderEarly(T animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float partialTicks) {
 		this.rtb = renderTypeBuffer;
 		super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
 		if (this.currentModelRenderCycle == 0 /* Pre-Layers */) {
@@ -101,7 +99,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 			stackIn.scale(width, height, width);
 		}
 	}
-	
+
 	@Override
 	public ResourceLocation getTextureLocation(T entity) {
 		return this.TEXTURE_GETTER.apply(entity);
@@ -111,12 +109,11 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	private IRenderTypeBuffer rtb;
 
 	@Override
-	public void renderLate(T animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue,
-			float partialTicks) {
+	public void renderLate(T animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float partialTicks) {
 		super.renderLate(animatable, stackIn, ticks, renderTypeBuffer, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
 		this.currentEntityBeingRendered = animatable;
 	}
-	
+
 	@Override
 	public void renderRecursively(GeoBone bone, MatrixStack stack, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
 		boolean customTextureMarker = this.currentModelRenderCycle == 0 && this.getTextureForBone(bone.getName(), this.currentEntityBeingRendered) != null;
@@ -136,7 +133,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					if (armorModel != null) {
 						ModelRenderer sourceLimb = this.getArmorPartForBone(bone.getName(), armorModel);
 						if (sourceLimb != null && !sourceLimb.cubes.isEmpty()) {
-							//IMPORTANT: The first cube is used to define the armor part!!
+							// IMPORTANT: The first cube is used to define the armor part!!
 							bone.childCubes.stream().findFirst().ifPresent((firstCube) -> {
 								final float targetSizeX = firstCube.size.x();
 								final float targetSizeY = firstCube.size.y();
@@ -145,35 +142,34 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								float scaleX = targetSizeX / Math.abs(armorCube.maxX - armorCube.minX);
 								float scaleY = targetSizeY / Math.abs(armorCube.maxY - armorCube.minY);
 								float scaleZ = targetSizeZ / Math.abs(armorCube.maxZ - armorCube.minZ);
-								
-								//DONE: Copy matrix multiplication stuff from above
-								//Save buffer
-								//Tessellator.getInstance().draw();
+
+								// DONE: Copy matrix multiplication stuff from above
+								// Save buffer
+								// Tessellator.getInstance().draw();
 
 								stack.pushPose();
-								//multiplyMatrix(IGeoRenderer.MATRIX_STACK, bone);
-								
-								
-								//DONE: COpy getARmorResource from LayerArmorBase to bind the correct texture
-								//TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
+								// multiplyMatrix(IGeoRenderer.MATRIX_STACK, bone);
+
+								// DONE: COpy getARmorResource from LayerArmorBase to bind the correct texture
+								// TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
 								stack.pushPose();
-								
+
 								stack.scale(scaleX, scaleY, scaleZ);
-								
+
 								ResourceLocation armorResource = this.getArmorResource(currentEntityBeingRendered, armorForBone, boneSlot, null);
 								this.bindTexture(armorResource);
-								
-								//armorModel.setRotationAngles(targetSizeY, targetSizeZ, currentEntityBeingRendered.tickCount, currentEntityBeingRendered.yHeadRot, currentEntityBeingRendered.xRot, 0, currentEntityBeingRendered);
-								//sourceLimb.render(0);
-								IVertexBuilder ivb = ItemRenderer.getArmorFoilBuffer(rtb, RenderType.armorCutoutNoCull(armorResource), false,  armorForBone.hasFoil());
+
+								// armorModel.setRotationAngles(targetSizeY, targetSizeZ, currentEntityBeingRendered.tickCount, currentEntityBeingRendered.yHeadRot, currentEntityBeingRendered.xRot, 0, currentEntityBeingRendered);
+								// sourceLimb.render(0);
+								IVertexBuilder ivb = ItemRenderer.getArmorFoilBuffer(rtb, RenderType.armorCutoutNoCull(armorResource), false, armorForBone.hasFoil());
 								sourceLimb.render(stack, ivb, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-								
-								stack.popPose();
-								
-								//Reset buffer
+
 								stack.popPose();
 
-								//builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+								// Reset buffer
+								stack.popPose();
+
+								// builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 							});
 							this.bindTexture(currentTexture);
 							bufferIn = rtb.getBuffer(RenderType.entityTranslucent(currentTexture));
@@ -185,7 +181,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 				BlockState boneBlock = this.getHeldBlockForBone(bone.getName(), this.currentEntityBeingRendered);
 				if (boneItem != null || boneBlock != null) {
 					stack.pushPose();
-					
+
 					if (boneItem != null) {
 						this.preRenderItem(boneItem, bone.getName(), this.currentEntityBeingRendered);
 
@@ -200,26 +196,25 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 
 						this.postRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
 					}
-					
+
 					stack.popPose();
-					
+
 					bufferIn = rtb.getBuffer(RenderType.entityTranslucent(currentTexture));
 				}
 			}
 		}
 		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-		
+
 		if (customTextureMarker) {
 			this.bindTexture(this.getTextureLocation(this.currentEntityBeingRendered));
 		}
 	}
-	
+
 	/*
 	 * Return null, if the entity's texture is used
 	 */
 	@Nullable
 	protected abstract ResourceLocation getTextureForBone(String boneName, T currentEntity);
-	
 
 	private void renderBlock(MatrixStack matrixStack, IRenderTypeBuffer rtb, int packedLightIn, BlockState iBlockState) {
 	}
@@ -264,40 +259,38 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	protected ModelRenderer getArmorPartForBone(String name, BipedModel armorModel) {
 		return null;
 	}
-	
+
 	/**
-     * More generic ForgeHook version of the above function, it allows for Items to have more control over what texture they provide.
-     *
-     * @param entity Entity wearing the armor
-     * @param stack ItemStack for the armor
-     * @param slot Slot ID that the item is in
-     * @param type Subtype, can be null or "overlay"
-     * @return ResourceLocation pointing at the armor's texture
-     */
+	 * More generic ForgeHook version of the above function, it allows for Items to have more control over what texture they provide.
+	 *
+	 * @param entity Entity wearing the armor
+	 * @param stack  ItemStack for the armor
+	 * @param slot   Slot ID that the item is in
+	 * @param type   Subtype, can be null or "overlay"
+	 * @return ResourceLocation pointing at the armor's texture
+	 */
 	private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.<String, ResourceLocation>newHashMap();
-    protected ResourceLocation getArmorResource(net.minecraft.entity.Entity entity, ItemStack stack, EquipmentSlotType slot, String type)
-    {
-        ArmorItem item = (ArmorItem)stack.getItem();
-        String texture = item.getMaterial().getName();
-        String domain = "minecraft";
-        int idx = texture.indexOf(':');
-        if (idx != -1)
-        {
-            domain = texture.substring(0, idx);
-            texture = texture.substring(idx + 1);
-        }
-        String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (slot == EquipmentSlotType.LEGS ? 2 : 1), type == null ? "" : String.format("_%s", type));
 
-        s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
-        ResourceLocation resourcelocation = (ResourceLocation)ARMOR_TEXTURE_RES_MAP.get(s1);
+	protected ResourceLocation getArmorResource(net.minecraft.entity.Entity entity, ItemStack stack, EquipmentSlotType slot, String type) {
+		ArmorItem item = (ArmorItem) stack.getItem();
+		String texture = item.getMaterial().getName();
+		String domain = "minecraft";
+		int idx = texture.indexOf(':');
+		if (idx != -1) {
+			domain = texture.substring(0, idx);
+			texture = texture.substring(idx + 1);
+		}
+		String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (slot == EquipmentSlotType.LEGS ? 2 : 1), type == null ? "" : String.format("_%s", type));
 
-        if (resourcelocation == null)
-        {
-            resourcelocation = new ResourceLocation(s1);
-            ARMOR_TEXTURE_RES_MAP.put(s1, resourcelocation);
-        }
+		s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
+		ResourceLocation resourcelocation = (ResourceLocation) ARMOR_TEXTURE_RES_MAP.get(s1);
 
-        return resourcelocation;
-    }
+		if (resourcelocation == null) {
+			resourcelocation = new ResourceLocation(s1);
+			ARMOR_TEXTURE_RES_MAP.put(s1, resourcelocation);
+		}
+
+		return resourcelocation;
+	}
 
 }
