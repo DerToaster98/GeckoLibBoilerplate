@@ -4,12 +4,18 @@ import java.util.Optional;
 
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.item.UseAction;
 import net.minecraft.network.IPacket;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -26,8 +32,13 @@ public class GeoTestEntity extends CreatureEntity implements IAnimatable, IAnima
 	// Geckolib
 	private AnimationFactory factory = new AnimationFactory(this);
 
-	protected GeoTestEntity(EntityType<? extends CreatureEntity> p_i48575_1_, World p_i48575_2_) {
+	public GeoTestEntity(EntityType<? extends GeoTestEntity> p_i48575_1_, World p_i48575_2_) {
 		super(p_i48575_1_, p_i48575_2_);
+	}
+	
+	@Override
+	protected void registerGoals() {
+		this.goalSelector.addGoal(0, new LookAtGoal(this, PlayerEntity.class, 8.0F /* distance*/));
 	}
 
 	@Override
@@ -67,7 +78,7 @@ public class GeoTestEntity extends CreatureEntity implements IAnimatable, IAnima
 		data.addAnimationController(new AnimationController<>(this, "controller_twohanded", 10, this::predicateTwoHandedSwing));
 	}
 
-	private static final String ANIM_NAME_PREFIX = "";
+	private static final String ANIM_NAME_PREFIX = "animation.biped.";
 
 	private static final String ANIM_NAME_IDLE = ANIM_NAME_PREFIX + "idle";
 
@@ -225,6 +236,25 @@ public class GeoTestEntity extends CreatureEntity implements IAnimatable, IAnima
 	@Override
 	public IPacket<?> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
+	}
+	
+	@Override
+	protected ActionResultType mobInteract(PlayerEntity pPlayer, Hand pHand) {
+		ItemStack item = pPlayer.getItemInHand(pHand);
+		if(item != null && !item.isEmpty() && !this.level.isClientSide) {
+			if(item.getItem() instanceof ArmorItem) {
+				ArmorItem ai = (ArmorItem) item.getItem();
+				this.setItemSlot(ai.getSlot(), item);
+			}
+			else if(item.getItem().getEquipmentSlot(item) != null) {
+				this.setItemSlot(item.getItem().getEquipmentSlot(item), item);
+			} else {
+				this.setItemInHand(pHand, item);
+			}
+			pPlayer.sendMessage(new StringTextComponent("Equipped item: " + item.getItem().getRegistryName().toString() + "!"), this.getUUID());
+			return ActionResultType.SUCCESS;
+		}
+		return super.mobInteract(pPlayer, pHand);
 	}
 
 }
