@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ForgeHooksClient;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
@@ -113,6 +114,9 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		super.renderLate(animatable, stackIn, ticks, renderTypeBuffer, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
 		this.currentEntityBeingRendered = animatable;
 	}
+	
+	protected final BipedModel<LivingEntity> DEFAULT_BIPED_ARMOR_MODEL_INNER = new BipedModel<>(0.5F);
+	protected final BipedModel<LivingEntity> DEFAULT_BIPED_ARMOR_MODEL_OUTER = new BipedModel<>(1.0F);
 
 	@Override
 	public void renderRecursively(GeoBone bone, MatrixStack stack, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
@@ -123,13 +127,14 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 			this.bindTexture(currentTexture);
 		}
 		if (this.currentModelRenderCycle == 0) {
+			stack.pushPose();
 			// Render armor
 			if (bone.getName().startsWith("armor")) {
 				final ItemStack armorForBone = this.getArmorForBone(bone.getName(), currentEntityBeingRendered);
 				final EquipmentSlotType boneSlot = this.getEquipmentSlotForArmorBone(bone.getName(), currentEntityBeingRendered);
 				if (armorForBone != null && armorForBone.getItem() instanceof ArmorItem && boneSlot != null) {
 					final ArmorItem armorItem = (ArmorItem) armorForBone.getItem();
-					final BipedModel armorModel = armorItem.getArmorModel(currentEntityBeingRendered, armorForBone, boneSlot, null);
+					final BipedModel armorModel = ForgeHooksClient.getArmorModel(currentEntityBeingRendered, armorForBone, boneSlot, boneSlot == EquipmentSlotType.LEGS ? DEFAULT_BIPED_ARMOR_MODEL_INNER : DEFAULT_BIPED_ARMOR_MODEL_OUTER);
 					if (armorModel != null) {
 						ModelRenderer sourceLimb = this.getArmorPartForBone(bone.getName(), armorModel);
 						if (sourceLimb != null && !sourceLimb.cubes.isEmpty()) {
@@ -147,8 +152,9 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								// Save buffer
 								// Tessellator.getInstance().draw();
 
-								stack.pushPose();
 								// multiplyMatrix(IGeoRenderer.MATRIX_STACK, bone);
+								stack.scale(-1, -1, 1);
+								stack.translate(0, -1.5, 0);
 
 								// DONE: COpy getARmorResource from LayerArmorBase to bind the correct texture
 								// TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
@@ -167,7 +173,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								stack.popPose();
 
 								// Reset buffer
-								stack.popPose();
+								
 
 								// builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 							});
@@ -202,6 +208,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					bufferIn = rtb.getBuffer(RenderType.entityTranslucent(currentTexture));
 				}
 			}
+			stack.popPose();
 		}
 		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 

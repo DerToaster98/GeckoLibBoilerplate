@@ -1,5 +1,6 @@
 package com.example.examplemod.client;
 
+import com.example.examplemod.ExampleMod;
 import com.example.examplemod.entity.GeoTestEntity;
 
 import net.minecraft.block.BlockState;
@@ -13,11 +14,11 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("examplemod", "textures/entity/testentity.png");
-	private static final ResourceLocation MODEL_RESLOC = new ResourceLocation("examplemod", "geo/testentity.geo.json");
+	private static final ResourceLocation TEXTURE = new ResourceLocation(ExampleMod.MODID, "textures/entity/testentity.png");
+	private static final ResourceLocation MODEL_RESLOC = new ResourceLocation(ExampleMod.MODID, "geo/testentity.geo.json");
 
-	protected RenderGeoTestEntity(EntityRendererManager renderManager) {
-		super(renderManager, new GeoTestEntityModel(TEXTURE, MODEL_RESLOC, "testentity"));
+	public RenderGeoTestEntity(EntityRendererManager renderManager) {
+		super(renderManager, new GeoTestEntityModel(MODEL_RESLOC, TEXTURE, "testentity"));
 	}
 
 	@Override
