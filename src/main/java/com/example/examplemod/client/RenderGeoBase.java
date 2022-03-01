@@ -19,7 +19,9 @@ import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.model.ModelRenderer.ModelBox;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
@@ -28,6 +30,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
 import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
@@ -189,11 +192,30 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					stack.pushPose();
 
 					if (boneItem != null) {
-						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered);
+						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 
-						Minecraft.getInstance().getItemRenderer().renderStatic(boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), packedLightIn, packedOverlayIn, stack, this.rtb);
-
-						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered);
+						//Minecraft.getInstance().getItemRenderer().renderStatic(boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), packedLightIn, packedOverlayIn, stack, this.rtb);
+						/*Minecraft.getInstance().getItemRenderer().render(
+								boneItem, 
+								this.getCameraTransformForItemAtBone(boneItem, bone.getName()), 
+								this.currentEntityBeingRendered instanceof MobEntity && ((MobEntity) this.currentEntityBeingRendered).isLeftHanded(),
+								stack, 
+								rtb, 
+								packedLightIn, 
+								packedOverlayIn,
+								Minecraft.getInstance().getItemRenderer().getModel(boneItem, Minecraft.getInstance().level, this.currentEntityBeingRendered)
+						);*/
+						Minecraft.getInstance().getItemInHandRenderer().renderItem(
+								currentEntityBeingRendered, 
+								boneItem, 
+								this.getCameraTransformForItemAtBone(boneItem, bone.getName()),
+								false, 
+								stack, 
+								rtb, 
+								packedLightIn
+						);
+						
+						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 					}
 					if (boneBlock != null) {
 						this.preRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
@@ -240,11 +262,11 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	@Nullable
 	protected abstract BlockState getHeldBlockForBone(String boneName, T currentEntity);
 
-	protected abstract void preRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity);
+	protected abstract void preRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity, IBone bone);
 
 	protected abstract void preRenderBlock(BlockState block, String boneName, T currentEntity);
 
-	protected abstract void postRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity);
+	protected abstract void postRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity, IBone bone);
 
 	protected abstract void postRenderBlock(BlockState block, String boneName, T currentEntity);
 
