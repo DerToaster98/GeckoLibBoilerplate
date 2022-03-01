@@ -189,11 +189,11 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					stack.pushPose();
 
 					if (boneItem != null) {
-						this.preRenderItem(boneItem, bone.getName(), this.currentEntityBeingRendered);
+						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered);
 
 						Minecraft.getInstance().getItemRenderer().renderStatic(boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), packedLightIn, packedOverlayIn, stack, this.rtb);
 
-						this.postRenderItem(boneItem, bone.getName(), this.currentEntityBeingRendered);
+						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered);
 					}
 					if (boneBlock != null) {
 						this.preRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
@@ -240,11 +240,11 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 	@Nullable
 	protected abstract BlockState getHeldBlockForBone(String boneName, T currentEntity);
 
-	protected abstract void preRenderItem(ItemStack item, String boneName, T currentEntity);
+	protected abstract void preRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity);
 
 	protected abstract void preRenderBlock(BlockState block, String boneName, T currentEntity);
 
-	protected abstract void postRenderItem(ItemStack item, String boneName, T currentEntity);
+	protected abstract void postRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity);
 
 	protected abstract void postRenderBlock(BlockState block, String boneName, T currentEntity);
 
