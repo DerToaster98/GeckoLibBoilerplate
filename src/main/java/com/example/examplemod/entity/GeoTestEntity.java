@@ -10,12 +10,12 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.item.ShootableItem;
 import net.minecraft.item.UseAction;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -59,7 +59,14 @@ public class GeoTestEntity extends CreatureEntity implements IAnimatable, IAnima
 	}
 
 	public boolean isWieldingTwoHandedWeapon() {
-		return false;
+		return 
+				//Bow and crossbows
+				(
+						this.getMainHandItem().getItem() instanceof ShootableItem || this.getOffhandItem().getItem() instanceof ShootableItem
+						|| this.getMainHandItem().getUseAnimation() == UseAction.BOW || this.getOffhandItem().getUseAnimation() == UseAction.BOW
+						|| this.getMainHandItem().getUseAnimation() == UseAction.CROSSBOW || this.getOffhandItem().getUseAnimation() == UseAction.CROSSBOW
+				)
+				||(this.getMainHandItem().getUseAnimation() == UseAction.SPEAR || this.getOffhandItem().getUseAnimation() == UseAction.SPEAR);
 	}
 
 	@Override
@@ -171,9 +178,9 @@ public class GeoTestEntity extends CreatureEntity implements IAnimatable, IAnima
 			} else {
 				// First: Check for firearm, spear and greatsword in either hand
 				// Main hand has priority
-				Optional<PlayState> resultState = performTwoHandedLogicPerHand(this.getMainHandItem(), !this.isLeftHanded(), event);
+				Optional<PlayState> resultState = performTwoHandedLogicPerHand(this.getMainHandItem(), this.isLeftHanded(), event);
 				if (!resultState.isPresent()) {
-					resultState = performTwoHandedLogicPerHand(this.getOffhandItem(), this.isLeftHanded(), event);
+					resultState = performTwoHandedLogicPerHand(this.getOffhandItem(), !this.isLeftHanded(), event);
 				}
 				if (resultState.isPresent()) {
 					return resultState.get();
