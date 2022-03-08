@@ -159,7 +159,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								stack.scale(-1, -1, 1);
 								stack.translate(0, -1.5, 0);
 
-								// DONE: COpy getARmorResource from LayerArmorBase to bind the correct texture
+								// DONE: Copy getARmorResource from LayerArmorBase to bind the correct texture
 								// TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
 								stack.pushPose();
 
@@ -189,7 +189,6 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 				ItemStack boneItem = this.getHeldItemForBone(bone.getName(), this.currentEntityBeingRendered);
 				BlockState boneBlock = this.getHeldBlockForBone(bone.getName(), this.currentEntityBeingRendered);
 				if (boneItem != null || boneBlock != null) {
-					stack.pushPose();
 
 					if (boneItem != null) {
 						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
@@ -225,15 +224,15 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 						this.postRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
 					}
 
-					stack.popPose();
 
 					bufferIn = rtb.getBuffer(RenderType.entityTranslucent(currentTexture));
 				}
 			}
 			stack.popPose();
 		}
-		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 
+		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		
 		if (customTextureMarker) {
 			this.bindTexture(this.getTextureLocation(this.currentEntityBeingRendered));
 		}
