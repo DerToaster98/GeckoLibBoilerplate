@@ -7,13 +7,11 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
+import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
-import net.minecraft.item.SwordItem;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import software.bernie.geckolib3.core.processor.IBone;
@@ -56,38 +54,24 @@ public class RenderGeoTestEntity extends RenderGeoBase<GeoTestEntity> {
 	protected void preRenderItem(MatrixStack stack, ItemStack item, String boneName, GeoTestEntity currentEntity, IBone bone) {
 		if(item == this.mainHand || item == this.offHand) {
 			stack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
-			stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-			boolean flag = !currentEntity.isLeftHanded() ? item == this.offHand : item == this.mainHand;
-			stack.translate((double)((float)(flag ? -1 : 1) / 16.0F), 0.125D, -0.625D);
-			//stack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-			//stack.translate(-0.5, 0, 0);
-			//stack.mulPose(Vector3f.ZP.rotationDegrees(-45F));
-			/*stack.translate(0, 0, -1);
-			if(item.getItem() instanceof SwordItem) {
-				stack.translate(0, 0.15, 0);
-			}
-			if(item.getItem().isShield(item, currentEntity) ||item.getItem() instanceof ShieldItem) {
-				stack.translate(-0.025, 0.125, -0.2);
-			}*/
 			boolean shieldFlag = item.isShield(currentEntity) || item.getItem() instanceof ShieldItem;
-			stack.translate(0, 0, -0.125);
 			if(item == this.mainHand) {
-				stack.translate(-0.4, 0, 0);
 				if(shieldFlag) {
-					stack.translate(-0.05, 0, 0);
+					stack.translate(0.0, 0.125, -0.25);
+				} else {
+					
 				}
 			} else {
-				stack.translate(0.4, 0, 0);
 				if(shieldFlag) {
-					stack.translate(0.05, 0, -0.5);
+					stack.translate(0, 0.125, 0.25);
 					stack.mulPose(Vector3f.YP.rotationDegrees(180));
 				} else {
-					//TODO
+					
 				}
 					
 				
 			}
-			stack.mulPose(Vector3f.YP.rotationDegrees(180));
+			//stack.mulPose(Vector3f.YP.rotationDegrees(180));
 			
 			//stack.scale(0.75F, 0.75F, 0.75F);
 		}

@@ -19,9 +19,7 @@ import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.model.ModelRenderer.ModelBox;
-import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
@@ -131,6 +129,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		}
 		if (this.currentModelRenderCycle == 0) {
 			stack.pushPose();
+			
 			// Render armor
 			if (bone.getName().startsWith("armor")) {
 				final ItemStack armorForBone = this.getArmorForBone(bone.getName(), currentEntityBeingRendered);
@@ -190,6 +189,10 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 				BlockState boneBlock = this.getHeldBlockForBone(bone.getName(), this.currentEntityBeingRendered);
 				if (boneItem != null || boneBlock != null) {
 
+					stack.pushPose();
+					//First, let's move our render position to the pivot point...
+					stack.translate(bone.getPivotX() / 16, bone.getPivotY() / 16, bone.getPositionZ() / 16);
+					
 					if (boneItem != null) {
 						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 
@@ -224,6 +227,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 						this.postRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
 					}
 
+					stack.popPose();
 
 					bufferIn = rtb.getBuffer(RenderType.entityTranslucent(currentTexture));
 				}
