@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import net.minecraft.block.BlockState;
@@ -24,6 +25,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -155,8 +157,15 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								// Tessellator.getInstance().draw();
 
 								// multiplyMatrix(IGeoRenderer.MATRIX_STACK, bone);
+								sourceLimb.setPos(-bone.getPivotX(), - bone.getPivotY(), bone.getPivotZ());
+								sourceLimb.xRot = - bone.getRotationX();
+								sourceLimb.yRot = - bone.getRotationY();
+								sourceLimb.zRot = bone.getRotationZ();
 								stack.scale(-1, -1, 1);
-								stack.translate(0, -1.5, 0);
+								//stack.translate(0, 0, bone.getPivotZ() / 16);
+								//stack.translate(0, - bone.getPivotY() / 8, 0);
+								//stack.translate(0, - 1.5, 0);
+								//stack.translate(-bone.getPivotX() / 16, 0, 0);
 
 								// DONE: Copy getARmorResource from LayerArmorBase to bind the correct texture
 								// TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
@@ -192,6 +201,10 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					stack.pushPose();
 					//First, let's move our render position to the pivot point...
 					stack.translate(bone.getPivotX() / 16, bone.getPivotY() / 16, bone.getPositionZ() / 16);
+					
+					stack.mulPose(Vector3f.XP.rotationDegrees(bone.getRotationX()));
+					stack.mulPose(Vector3f.YP.rotationDegrees(bone.getRotationY()));
+					stack.mulPose(Vector3f.ZP.rotationDegrees(bone.getRotationZ()));
 					
 					if (boneItem != null) {
 						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
