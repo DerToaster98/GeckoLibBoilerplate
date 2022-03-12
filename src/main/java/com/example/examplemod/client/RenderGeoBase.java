@@ -152,15 +152,12 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								float scaleY = targetSizeY / Math.abs(armorCube.maxY - armorCube.minY);
 								float scaleZ = targetSizeZ / Math.abs(armorCube.maxZ - armorCube.minZ);
 
-								// DONE: Copy matrix multiplication stuff from above
-								// Save buffer
 								sourceLimb.setPos(-bone.getPivotX(), -bone.getPivotY(), bone.getPivotZ());
 								sourceLimb.xRot = -bone.getRotationX();
 								sourceLimb.yRot = -bone.getRotationY();
 								sourceLimb.zRot = bone.getRotationZ();
 								stack.scale(-1, -1, 1);
 
-								// DONE: Copy getARmorResource from LayerArmorBase to bind the correct texture
 								stack.pushPose();
 
 								stack.scale(scaleX, scaleY, scaleZ);
@@ -168,8 +165,6 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 								ResourceLocation armorResource = this.getArmorResource(currentEntityBeingRendered, armorForBone, boneSlot, null);
 								this.bindTexture(armorResource);
 
-								// armorModel.setRotationAngles(targetSizeY, targetSizeZ, currentEntityBeingRendered.tickCount, currentEntityBeingRendered.yHeadRot, currentEntityBeingRendered.xRot, 0, currentEntityBeingRendered);
-								// sourceLimb.render(0);
 								if (armorItem instanceof IDyeableArmorItem) {
 									int i = ((net.minecraft.item.IDyeableArmorItem) armorItem).getColor(armorForBone);
 									float r = (float) (i >> 16 & 255) / 255.0F;
@@ -184,9 +179,6 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 
 								stack.popPose();
 
-								// Reset buffer
-
-								// builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 							});
 							this.bindTexture(currentTexture);
 							bufferIn = rtb.getBuffer(RenderType.entityTranslucent(currentTexture));
@@ -209,11 +201,6 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 					if (boneItem != null) {
 						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 
-						// Minecraft.getInstance().getItemRenderer().renderStatic(boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), packedLightIn, packedOverlayIn, stack, this.rtb);
-						/*
-						 * Minecraft.getInstance().getItemRenderer().render( boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), this.currentEntityBeingRendered instanceof MobEntity && ((MobEntity)
-						 * this.currentEntityBeingRendered).isLeftHanded(), stack, rtb, packedLightIn, packedOverlayIn, Minecraft.getInstance().getItemRenderer().getModel(boneItem, Minecraft.getInstance().level, this.currentEntityBeingRendered) );
-						 */
 						Minecraft.getInstance().getItemInHandRenderer().renderItem(currentEntityBeingRendered, boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), false, stack, rtb, packedLightIn);
 
 						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
@@ -296,6 +283,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		return null;
 	}
 
+	//Copied from BipedArmorLayer
 	/**
 	 * More generic ForgeHook version of the above function, it allows for Items to have more control over what texture they provide.
 	 *
