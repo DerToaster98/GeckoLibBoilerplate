@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.model.ModelRenderer.ModelBox;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
@@ -116,7 +117,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		super.renderLate(animatable, stackIn, ticks, renderTypeBuffer, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
 		this.currentEntityBeingRendered = animatable;
 	}
-	
+
 	protected final BipedModel<LivingEntity> DEFAULT_BIPED_ARMOR_MODEL_INNER = new BipedModel<>(0.5F);
 	protected final BipedModel<LivingEntity> DEFAULT_BIPED_ARMOR_MODEL_OUTER = new BipedModel<>(1.0F);
 
@@ -130,7 +131,7 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		}
 		if (this.currentModelRenderCycle == 0) {
 			stack.pushPose();
-			
+
 			// Render armor
 			if (bone.getName().startsWith("armor")) {
 				final ItemStack armorForBone = this.getArmorForBone(bone.getName(), currentEntityBeingRendered);
@@ -153,14 +154,13 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 
 								// DONE: Copy matrix multiplication stuff from above
 								// Save buffer
-								sourceLimb.setPos(-bone.getPivotX(), - bone.getPivotY(), bone.getPivotZ());
-								sourceLimb.xRot = - bone.getRotationX();
-								sourceLimb.yRot = - bone.getRotationY();
+								sourceLimb.setPos(-bone.getPivotX(), -bone.getPivotY(), bone.getPivotZ());
+								sourceLimb.xRot = -bone.getRotationX();
+								sourceLimb.yRot = -bone.getRotationY();
 								sourceLimb.zRot = bone.getRotationZ();
 								stack.scale(-1, -1, 1);
 
 								// DONE: Copy getARmorResource from LayerArmorBase to bind the correct texture
-								// TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
 								stack.pushPose();
 
 								stack.scale(scaleX, scaleY, scaleZ);
@@ -170,13 +170,21 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 
 								// armorModel.setRotationAngles(targetSizeY, targetSizeZ, currentEntityBeingRendered.tickCount, currentEntityBeingRendered.yHeadRot, currentEntityBeingRendered.xRot, 0, currentEntityBeingRendered);
 								// sourceLimb.render(0);
-								IVertexBuilder ivb = ItemRenderer.getArmorFoilBuffer(rtb, RenderType.armorCutoutNoCull(armorResource), false, armorForBone.hasFoil());
-								sourceLimb.render(stack, ivb, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+								if (armorItem instanceof IDyeableArmorItem) {
+									int i = ((net.minecraft.item.IDyeableArmorItem) armorItem).getColor(armorForBone);
+									float r = (float) (i >> 16 & 255) / 255.0F;
+									float g = (float) (i >> 8 & 255) / 255.0F;
+									float b = (float) (i & 255) / 255.0F;
+									
+									renderArmorPart(stack, sourceLimb, packedLightIn, packedOverlayIn, r, g, b, 1, armorForBone, armorResource);
+									renderArmorPart(stack, sourceLimb, packedLightIn, packedOverlayIn, 1, 1, 1, 1, armorForBone, getArmorResource(currentEntityBeingRendered, armorForBone, boneSlot, "overlay"));
+								} else {
+									renderArmorPart(stack, sourceLimb, packedLightIn, packedOverlayIn, 1, 1, 1, 1, armorForBone, armorResource);
+								}
 
 								stack.popPose();
 
 								// Reset buffer
-								
 
 								// builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
 							});
@@ -191,37 +199,23 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 				if (boneItem != null || boneBlock != null) {
 
 					stack.pushPose();
-					//First, let's move our render position to the pivot point...
+					// First, let's move our render position to the pivot point...
 					stack.translate(bone.getPivotX() / 16, bone.getPivotY() / 16, bone.getPositionZ() / 16);
-					
+
 					stack.mulPose(Vector3f.XP.rotationDegrees(bone.getRotationX()));
 					stack.mulPose(Vector3f.YP.rotationDegrees(bone.getRotationY()));
 					stack.mulPose(Vector3f.ZP.rotationDegrees(bone.getRotationZ()));
-					
+
 					if (boneItem != null) {
 						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 
-						//Minecraft.getInstance().getItemRenderer().renderStatic(boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), packedLightIn, packedOverlayIn, stack, this.rtb);
-						/*Minecraft.getInstance().getItemRenderer().render(
-								boneItem, 
-								this.getCameraTransformForItemAtBone(boneItem, bone.getName()), 
-								this.currentEntityBeingRendered instanceof MobEntity && ((MobEntity) this.currentEntityBeingRendered).isLeftHanded(),
-								stack, 
-								rtb, 
-								packedLightIn, 
-								packedOverlayIn,
-								Minecraft.getInstance().getItemRenderer().getModel(boneItem, Minecraft.getInstance().level, this.currentEntityBeingRendered)
-						);*/
-						Minecraft.getInstance().getItemInHandRenderer().renderItem(
-								currentEntityBeingRendered, 
-								boneItem, 
-								this.getCameraTransformForItemAtBone(boneItem, bone.getName()),
-								false, 
-								stack, 
-								rtb, 
-								packedLightIn
-						);
-						
+						// Minecraft.getInstance().getItemRenderer().renderStatic(boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), packedLightIn, packedOverlayIn, stack, this.rtb);
+						/*
+						 * Minecraft.getInstance().getItemRenderer().render( boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), this.currentEntityBeingRendered instanceof MobEntity && ((MobEntity)
+						 * this.currentEntityBeingRendered).isLeftHanded(), stack, rtb, packedLightIn, packedOverlayIn, Minecraft.getInstance().getItemRenderer().getModel(boneItem, Minecraft.getInstance().level, this.currentEntityBeingRendered) );
+						 */
+						Minecraft.getInstance().getItemInHandRenderer().renderItem(currentEntityBeingRendered, boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), false, stack, rtb, packedLightIn);
+
 						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 					}
 					if (boneBlock != null) {
@@ -241,10 +235,15 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 		}
 
 		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-		
+
 		if (customTextureMarker) {
 			this.bindTexture(this.getTextureLocation(this.currentEntityBeingRendered));
 		}
+	}
+
+	private void renderArmorPart(MatrixStack stack, ModelRenderer sourceLimb, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha, ItemStack armorForBone, ResourceLocation armorResource) {
+		IVertexBuilder ivb = ItemRenderer.getArmorFoilBuffer(rtb, RenderType.armorCutoutNoCull(armorResource), false, armorForBone.hasFoil());
+		sourceLimb.render(stack, ivb, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 	}
 
 	/*
