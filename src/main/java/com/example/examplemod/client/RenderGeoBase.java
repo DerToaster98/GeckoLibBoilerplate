@@ -154,18 +154,11 @@ public abstract class RenderGeoBase<T extends LivingEntity & IAnimatable> extend
 
 								// DONE: Copy matrix multiplication stuff from above
 								// Save buffer
-								// Tessellator.getInstance().draw();
-
-								// multiplyMatrix(IGeoRenderer.MATRIX_STACK, bone);
 								sourceLimb.setPos(-bone.getPivotX(), - bone.getPivotY(), bone.getPivotZ());
 								sourceLimb.xRot = - bone.getRotationX();
 								sourceLimb.yRot = - bone.getRotationY();
 								sourceLimb.zRot = bone.getRotationZ();
 								stack.scale(-1, -1, 1);
-								//stack.translate(0, 0, bone.getPivotZ() / 16);
-								//stack.translate(0, - bone.getPivotY() / 8, 0);
-								//stack.translate(0, - 1.5, 0);
-								//stack.translate(-bone.getPivotX() / 16, 0, 0);
 
 								// DONE: Copy getARmorResource from LayerArmorBase to bind the correct texture
 								// TODO: Check if armor is colored, if yes => color it and set overlay, also check for enchantment glint thingy
